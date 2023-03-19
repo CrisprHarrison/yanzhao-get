@@ -4,6 +4,7 @@ import logging
 from urllib.parse import urljoin, quote_plus
 from lxml import etree
 import sqlite3
+import datetime
 
 # 目标网页的 URL 和 XPath
 PAGE_URL = 'https://yjs.sdju.edu.cn/main.htm'
@@ -19,7 +20,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 conn = sqlite3.connect('./articles.db')
 c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS articles
-             (title text, link text, time real)''')
+             (title text, link text, time text)''')
 conn.commit()
 
 def check_new_element():
@@ -60,7 +61,9 @@ def check_new_element():
         requests.get(url, headers={'Content-Type': 'text/plain;charset=utf-8'}, params={'encode': True})
 
         # 将变更内容写入数据库
-        c.execute("INSERT INTO articles VALUES (?, ?, ?)", (title, link, time.time()))
+        now = datetime.datetime.now()
+        time_str = now.strftime('%Y-%m-%d %H:%M:%S')
+        c.execute("INSERT INTO articles VALUES (?, ?, ?)", (title, link, time_str))
         conn.commit()
 
         logging.info(f'Successfully pushed and recorded new article: {title}')

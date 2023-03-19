@@ -1,3 +1,5 @@
 我的目标不是一个博客，但是他的 xpath是(//div[@id='container-1']/div[@class='inner']/div[contains(@class,'mod')]/div[@class='mr']/div[contains(@class,'post')]/div[@class='con']/ul[contains(@class,'news_list')]/li[contains(@class,'news')]/div[@class='news_title']/a)[1]，这是一个超链接，它的 a标签是文章的标题，超链接文章的 url,我希望 bark 推送的title与文章的标题对应上，推送的内容与超链接对应上，每隔五分钟运行一次
 
-我希望能够使用一个 Python 脚本帮助我每五分钟爬取特定博客是否有博文更新，并且将最新一条博文的超链接通过访问"bark的超链接"发送给我，你有什么比较好的解决方案吗？
+我希望能够使用一个 Python 脚本帮助我每五分钟爬取特定网站是否有新闻更新，并且将最新一条新闻的超链接通过访问"bark的超链接"发送给我，你有什么比较好的解决方案吗？
+
+这是我的代码，它能够在发送消息时同时写入 log和数据库。但是我希望能够在它每次获取到新闻之后与数据库最新一条消息进行比对，如果一致，则不发送推送消息。你有什么好的解决方案吗？
