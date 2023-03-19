@@ -43,6 +43,15 @@ def check_new_element():
         # 对标题进行 URL 编码
         encoded_title = quote_plus(title)
 
+        # 查询数据库中最新的记录
+        c.execute("SELECT title FROM articles ORDER BY time DESC LIMIT 1")
+        latest_record = c.fetchone()
+
+        # 如果数据库中已经存在最新记录并且与当前记录一致，则不发送推送消息
+        if latest_record and latest_record[0] == title:
+            logging.info(f'No new article found: {title}')
+            return
+
         # 构造 Bark 推送消息
         message = encoded_title  # 使用 URL 编码后的标题作为消息文本
         url = f'{BARK_URL}{message}?url={link}&encode=true'
