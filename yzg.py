@@ -70,6 +70,22 @@ def check_new_element():
     except Exception as e:
         logging.error(f'Error pushing or recording new article: {e}')
 
+def hourly_report():
+    try:
+        # 构造推送消息
+        message = 'Hourly report'
+        url = f'{BARK_URL}{message}'
+
+        # 发送 HTTP 请求触发消息推送
+        requests.get(url, headers={'Content-Type': 'text/plain;charset=utf-8'})
+
+        logging.info('Successfully sent hourly report')
+    except Exception as e:
+        logging.error(f'Error sending hourly report: {e}')
+
+# 每个小时整点发送一次推送
 while True:
+    if datetime.datetime.now().minute == 0:
+        hourly_report()
     check_new_element()
-    time.sleep(60)  # 等待五分钟
+    time.sleep(300)  # 等待 5 分钟
