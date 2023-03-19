@@ -5,6 +5,7 @@ from urllib.parse import urljoin, quote_plus
 from lxml import etree
 import sqlite3
 import datetime
+import threading
 
 # 目标网页的 URL 和 XPath
 PAGE_URL = 'https://yjs.sdju.edu.cn/main.htm'
@@ -73,3 +74,32 @@ def check_new_element():
 while True:
     check_new_element()
     time.sleep(300)  # 等待五分钟
+
+def check_new_element():
+    # 实现检查新闻并发送推送的功能
+    while True:
+        # ... 省略检查新闻并发送推送的代码 ...
+        time.sleep(300)  # 每隔五分钟检查一次
+
+def send_heartbeat():
+    while True:
+        # 计算下一个整点时间
+        now = datetime.datetime.now()
+        next_hour = (now + datetime.timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+
+        # 计算下一个整点时间与当前时间的差值
+        delta = next_hour - now
+        wait_seconds = delta.total_seconds()
+
+        # 等待到达下一个整点时间
+        time.sleep(wait_seconds)
+
+        # 发送心跳消息
+        requests.get(BARK_URL + '服务正常', headers={'Content-Type': 'text/plain;charset=utf-8'}, params={'encode': True})
+
+
+# 创建并启动两个线程
+check_thread = threading.Thread(target=check_new_element)
+heart_thread = threading.Thread(target=send_heartbeat)
+check_thread.start()
+heart_thread.start()
