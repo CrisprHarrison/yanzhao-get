@@ -4,6 +4,7 @@ import logging
 from urllib.parse import urljoin, quote_plus
 from lxml import etree
 import sqlite3
+from datetime import datetime
 
 # 目标网页的 URL 和 XPath
 PAGE_URL = 'https://yjs.sdju.edu.cn/main.htm'
@@ -19,7 +20,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 conn = sqlite3.connect('./articles.db')
 c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS articles
-             (title text, link text, time real)''')
+             (title text, link text, time text)''')
 conn.commit()
 
 def check_new_element():
@@ -43,24 +44,24 @@ def check_new_element():
         # 对标题进行 URL 编码
         encoded_title = quote_plus(title)
 
-        # 查询数据库中最新的记录
-        c.execute("SELECT title FROM articles ORDER BY time DESC LIMIT 1")
-        latest_record = c.fetchone()
-
-        # 如果数据库中已经存在最新记录并且与当前记录一致，则不发送推送消息
-        if latest_record and latest_record[0] == title:
-            logging.info(f'No new article found: {title}')
-            return
-
         # 构造 Bark 推送消息
         message = encoded_title  # 使用 URL 编码后的标题作为消息文本
         url = f'{BARK_URL}{message}?url={link}&encode=true'
+
+        # 检查数据库中最新一条记录的时间是否与当前时间相同
+        c.execute("SELECT time FROM articles ORDER BY time DESC LIMIT 1")
+        last_time = c.fetchone()
+        if last_time and datetime.fromtimestamp(time.time()).date() == datetime.strptime(last_time[0], '%Y-%m-%d').date():
+            # 最新一条记录的时间与当前时间相同，不发送推送消息
+            logging.info('No new article found')
+            return
 
         # 发送 HTTP 请求触发消息推送
         requests.get(url, headers={'Content-Type': 'text/plain;charset=utf-8'}, params={'encode': True})
 
         # 将变更内容写入数据库
-        c.execute("INSERT INTO articles VALUES (?, ?, ?)", (title, link, time.time()))
+        current_time = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
+        c.execute("INSERT INTO articles VALUES (?, ?, ?)", (title, link, current_time))
         conn.commit()
 
         logging.info(f'Successfully pushed and recorded new article: {title}')
