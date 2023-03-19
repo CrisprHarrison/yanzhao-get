@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/robfig/cron/v3"
 )
 
@@ -23,15 +24,13 @@ const (
 // Bark 推送服务的 URL
 var barkURL = "https://api.day.app/EbVXR9a3EYxqzbvkGjybha/"
 
-// 数据库连接和游标
-var db *sql.DB
+// 准备 SQL 语句
 var stmtInsert *sql.Stmt
 var stmtSelectLatest *sql.Stmt
 
 func main() {
 	// 打开数据库连接
-	var err error
-	db, err = sql.Open("sqlite3", "./articles.db")
+	db, err := sql.Open("sqlite3", "./articles.db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -95,43 +94,34 @@ func checkNewElement() {
 	}
 	element := doc.Find(cssSelector).First()
 
-	// 获取元素文本内容和链接
+	// 获取元素文本内容和链接，以及当前时间
 	title := element.Text()
-	relativeLink, exists := element.Attr("href")
-	if !exists {
-		log.Printf("No link found for element: %v\n", element)
-		return
-	}
+	link, _ := element.Attr("href")
+	now := time.Now().Format("2006-01-02 15:04:05")
 
-	// 处理相对链接，构造绝对链接
-	u, err := url.Parse(pageURL)
-	if err != nil {
-		log.Printf("Error parsing URL: %v\n", err)
-		return
-	}
-	absLink := u.ResolveReference(&url.URL{Path: relativeLink}).String()
-
-	// 查询数据库中最新的文章标题
+	// 查询数据库中最新的文章标题，并与当前文章标题比较是否相同
 	var latestTitle string
 	err = stmtSelectLatest.QueryRow().Scan(&latestTitle)
 	if err != nil && err != sql.ErrNoRows {
 		log.Printf("Error querying latest article: %v\n", err)
 		return
 	}
+	if title == latestTitle {
+		log.Println("No new element found")
+		return
+	}
 
-	// 如果最新文章标题与当前文章标题不同，则插入新文章并发送 Bark 推送
-	if title != latestTitle {
-		_, err = stmtInsert.Exec(title, absLink, time.Now().Format("2006-01-02 15:04:05"))
-		if err != nil {
-			log.Printf("Error inserting article: %v\n", err)
-			return
-		}
+	// 如果文章标题不同，则将新文章标题、链接和时间插入到数据库中，并发送推送通知
+	_, err = stmtInsert.Exec(title, link, now)
+	if err != nil {
+		log.Printf("Error inserting new article: %v\n", err)
+		return
+	}
 
-		// 发送 Bark 推送
-		_, err = http.Get(fmt.Sprintf("%s%s", barkURL, url.QueryEscape(title)))
-		if err != nil {
-			log.Printf("Error sending Bark notification: %v\n", err)
-			return
-		}
+	// 发送推送通知
+	message := url.PathEscape(fmt.Sprintf("【新文章】%s", title))
+	_, err = http.Get(fmt.Sprintf("%s%s", barkURL, message))
+	if err != nil {
+		log.Printf("Error sending notification: %v\n", err)
 	}
 }
