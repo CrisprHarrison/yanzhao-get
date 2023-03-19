@@ -89,3 +89,9 @@ while True:
         hourly_report()
     check_new_element()
     time.sleep(300)  # 等待 5 分钟
+
+    # 每隔一小时整点发送一次推送，不受等待时间限制
+    if datetime.datetime.now().minute == 0 and datetime.datetime.now().second == 0:
+        hourly_report()
+        time.sleep(3600)  # 等待 1 小时
+
