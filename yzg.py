@@ -58,7 +58,7 @@ def check_new_element():
                 # 如果数据库中已经存在最新记录并且与当前记录一致，则不发送推送消息
                 if latest_record and latest_record[0] == title:
                     logging.info(f'No new article found: {title}')
-                    time.sleep(60) # 在这里添加间隔时间
+                    time.sleep(300) # 在这里添加间隔时间
                     continue
 
                 # 构造 Bark 推送消息
@@ -79,7 +79,7 @@ def check_new_element():
                 logging.error(f'Error pushing or recording new article: {e}')
             
             # 每隔五分钟检测一次
-            time.sleep(60)
+            time.sleep(300)
 
     finally:
         # 关闭游标和数据库连接
@@ -102,7 +102,7 @@ def send_heartbeat():
             time.sleep(wait_seconds)
 
             # 构造心跳消息
-            message = '服务正常'
+            message = '服务正常/Sent heartbeat message'
 
             # 发送 HTTP 请求触发心跳消息
             requests.get(BARK_URL + message, headers={'Content-Type': 'text/plain;charset=utf-8'})
