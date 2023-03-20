@@ -1,0 +1,21 @@
+websites:
+  - page_url: 'https://example1.com'
+    xpath_expression: "//div[@class='news']/a"
+    bark_url: 'https://api.day.app/<key>/'
+    interval_seconds: 300
+  - page_url: 'https://example2.com'
+    xpath_expression: "//div[@class='blog']/a"
+    bark_url: 'https://api.day.app/<key>/'
+    interval_seconds: 600
+
+websites:
+  - name: a
+    page_url: 'https://example1.com'
+    xpath_expression: "//div[@class='news']/a"
+    bark_url: 'https://api.day.app/<key>/'
+    interval_seconds: 300
+  - name: b
+    page_url: 'https://example2.com'
+    xpath_expression: "//div[@class='blog']/a"
+    bark_url: 'https://api.day.app/<key>/'
+    interval_seconds: 600
