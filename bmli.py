@@ -40,7 +40,7 @@ def check_new_elements():
             try:
                 for site_config in config['websites']:
                     # Unpack configuration variables
-                    SITE_NAME = site_config['SITE_NAME']
+                    SITE_NAME = site_config['name']
                     PAGE_URL = site_config['page_url']
                     XPATH_EXPRESSION = site_config['xpath_expression']
                     BARK_URL = site_config['bark_url']

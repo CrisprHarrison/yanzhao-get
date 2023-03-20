@@ -1,11 +1,11 @@
 websites:
   - name: a
-    page_url: 'https://example1.com'
-    xpath_expression: "//div[@class='news']/a"
-    bark_url: 'https://api.day.app/<key>/'
-    interval_seconds: 300
+    page_url: 'https://wallstreetcn.com/live/global'
+    xpath_expression: "(//div[@id='app']/div[@class='layout-default']/div[@class='wrapper']/div[contains(@class,'sticky')]/div[@class='container']/ul[@class='nav-list']/li[@class='nav-item']/a[@class='nav-link'])[3]"
+    bark_url: 'https://api.day.app/EbVXR9a3EYxqzbvkGjybha/'
+    interval_seconds: 61
   - name: b
-    page_url: 'https://example2.com'
-    xpath_expression: "//div[@class='blog']/a"
-    bark_url: 'https://api.day.app/<key>/'
-    interval_seconds: 600
+    page_url: 'http://news.people.com.cn/'
+    xpath_expression: "(//div[@id='Searchresult']/ul[@class='clearfix']//a)[1]"
+    bark_url: 'https://api.day.app/EbVXR9a3EYxqzbvkGjybha/'
+    interval_seconds: 60
