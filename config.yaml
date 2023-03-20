@@ -1,0 +1,4 @@
+page_url: 'https://yjs.sdju.edu.cn/main.htm'
+xpath_expression: "(//div[@id='container-1']/div[@class='inner']/div[contains(@class,'mod')]/div[@class='mr']/div[contains(@class,'post')]/div[@class='con']/ul[contains(@class,'news_list')]/li[contains(@class,'news')]/div[@class='news_title']/a)[1]"
+bark_url: 'https://api.day.app/EbVXR9a3EYxqzbvkGjybha/'
+interval_seconds: 300

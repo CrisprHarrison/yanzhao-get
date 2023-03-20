@@ -6,13 +6,17 @@ from lxml import etree
 import sqlite3
 import datetime
 import threading
+import yaml
 
-# 目标网页的 URL 和 XPath
-PAGE_URL = 'https://yjs.sdju.edu.cn/main.htm'
-XPATH_EXPRESSION = "(//div[@id='container-1']/div[@class='inner']/div[contains(@class,'mod')]/div[@class='mr']/div[contains(@class,'post')]/div[@class='con']/ul[contains(@class,'news_list')]/li[contains(@class,'news')]/div[@class='news_title']/a)[1]"
+# Load configuration from YAML file
+with open('config.yaml', 'r') as f:
+    config = yaml.safe_load(f)
 
-# Bark 推送服务的 URL
-BARK_URL = 'https://api.day.app/EbVXR9a3EYxqzbvkGjybha/'
+# Unpack configuration variables
+PAGE_URL = config['page_url']
+XPATH_EXPRESSION = config['xpath_expression']
+BARK_URL = config['bark_url']
+INTERVAL_SECONDS = config['interval_seconds']
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S', handlers=[logging.StreamHandler(), logging.FileHandler('./log.log')])
@@ -58,7 +62,7 @@ def check_new_element():
                 # 如果数据库中已经存在最新记录并且与当前记录一致，则不发送推送消息
                 if latest_record and latest_record[0] == title:
                     logging.info(f'No new article found: {title}')
-                    time.sleep(300) # 在这里添加间隔时间
+                    time.sleep(INTERVAL_SECONDS) # 在这里添加间隔时间
                     continue
 
                 # 构造 Bark 推送消息
@@ -79,7 +83,7 @@ def check_new_element():
                 logging.error(f'Error pushing or recording new article: {e}')
             
             # 每隔五分钟检测一次
-            time.sleep(300)
+            time.sleep(INTERVAL_SECONDS)
 
     finally:
         # 关闭游标和数据库连接
