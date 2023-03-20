@@ -9,7 +9,7 @@ import threading
 import yaml
 
 # Load configuration from YAML file
-with open('config.yaml', 'r') as f:
+with open('websites.yaml', 'r') as f:
     config = yaml.safe_load(f)
 
 # 配置日志
@@ -21,8 +21,8 @@ c = conn.cursor()
 
 try:
     for site_config in config['websites']:
-        site_name = site_config['name']
-        c.execute(f'''CREATE TABLE IF NOT EXISTS {site_name}
+        SITE_NAME = site_config['name']
+        c.execute(f'''CREATE TABLE IF NOT EXISTS {SITE_NAME}
                      (title text, link text, time text)''')
         conn.commit()
 
@@ -40,6 +40,7 @@ def check_new_elements():
             try:
                 for site_config in config['websites']:
                     # Unpack configuration variables
+                    SITE_NAME = site_config['SITE_NAME']
                     PAGE_URL = site_config['page_url']
                     XPATH_EXPRESSION = site_config['xpath_expression']
                     BARK_URL = site_config['bark_url']
@@ -65,7 +66,7 @@ def check_new_elements():
                     encoded_title = quote_plus(title)
 
                     # 查询数据库中最新的记录
-                    c.execute(f"SELECT title FROM {site_name} WHERE link=? ORDER BY time DESC LIMIT 1", (link,))
+                    c.execute(f"SELECT title FROM {SITE_NAME} WHERE link=? ORDER BY time DESC LIMIT 1", (link,))
                     latest_record = c.fetchone()
 
                     # 如果数据库中已经存在最新记录并且与当前记录一致，则不发送推送消息
@@ -76,23 +77,24 @@ def check_new_elements():
 
                     # 构造 Bark 推送消息
                     message = encoded_title  # 使用 URL 编码后的标题作为消息文本
-                    url = f'{BARK_URL}{message}?url={link}&encode=true'
+                    url = f'{BARK_URL}{message}?url={link}'
 
                     # 发送 HTTP 请求触发消息推送
-                    requests.get(url, headers={'Content-Type': 'text/plain;charset=utf-8'}, params={'encode': True})
+                    requests.get(url, headers={'Content-Type': 'text/plain;charset=utf-8'})
 
                     # 将变更内容写入数据库
                     now = datetime.datetime.now()
                     time_str = now.strftime('%Y-%m-%d %H:%M:%S')
-                    c.execute(f"INSERT INTO {site_name} VALUES (?, ?, ?)", (title, link, time_str))
+                    c.execute(f"INSERT INTO {SITE_NAME} VALUES (?, ?, ?)", (title, link, time_str))
                     conn.commit()
 
                     logging.info(f'Successfully pushed and recorded new article: {title}')
-    except Exception as e:
-        logging.error(f'Error pushing or recording new article: {e}')
-            
-                    # 每隔五分钟检测一次
-                    time.sleep(INTERVAL_SECONDS)
+
+            except Exception as e:
+                logging.error(f'Error pushing or recording new article: {e}')
+
+            # 每隔指定的时间间隔检测一次
+            time.sleep(INTERVAL_SECONDS)
 
     finally:
         # 关闭游标和数据库连接
