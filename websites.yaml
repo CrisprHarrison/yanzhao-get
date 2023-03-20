@@ -3,9 +3,9 @@ websites:
     page_url: 'https://wallstreetcn.com/live/global'
     xpath_expression: "(//div[@id='app']/div[@class='layout-default']/div[@class='wrapper']/div[contains(@class,'sticky')]/div[@class='container']/ul[@class='nav-list']/li[@class='nav-item']/a[@class='nav-link'])[3]"
     bark_url: 'https://api.day.app/EbVXR9a3EYxqzbvkGjybha/'
-    interval_seconds: 61
+    interval_seconds: 5
   - name: b
-    page_url: 'http://news.people.com.cn/'
-    xpath_expression: "(//div[@id='Searchresult']/ul[@class='clearfix']//a)[1]"
+    page_url: 'https://wallstreetcn.com/'
+    xpath_expression: "//div[@id='app']/div[@class='layout-default']/div[@class='wrapper']/div[@class='wrapper']/div[contains(@class,'columns')]//div[contains(@class,'quotation-bar')]/a[contains(@class,'first')]//div[@class='price']"
     bark_url: 'https://api.day.app/EbVXR9a3EYxqzbvkGjybha/'
-    interval_seconds: 60
+    interval_seconds: 8

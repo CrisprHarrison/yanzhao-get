@@ -45,6 +45,7 @@ def check_new_elements():
                     XPATH_EXPRESSION = site_config['xpath_expression']
                     BARK_URL = site_config['bark_url']
                     INTERVAL_SECONDS = site_config['interval_seconds']
+                    CHECK_INTERVAL_SECONDS = site_config.get('check_interval', INTERVAL_SECONDS)  # 获取检测间隔时间
 
                     # 发送 HTTP 请求获取网页内容
                     response = requests.get(PAGE_URL)
@@ -72,7 +73,7 @@ def check_new_elements():
                     # 如果数据库中已经存在最新记录并且与当前记录一致，则不发送推送消息
                     if latest_record and latest_record[0] == title:
                         logging.info(f'[{PAGE_URL}] No new article found: {title}')
-                        time.sleep(INTERVAL_SECONDS) # 在这里添加间隔时间
+                        time.sleep(CHECK_INTERVAL_SECONDS)  # 使用检测间隔时间
                         continue
 
                     # 构造 Bark 推送消息
@@ -90,11 +91,11 @@ def check_new_elements():
 
                     logging.info(f'Successfully pushed and recorded new article: {title}')
 
+                    # 使用检测间隔时间
+                    time.sleep(CHECK_INTERVAL_SECONDS)
+
             except Exception as e:
                 logging.error(f'Error pushing or recording new article: {e}')
-
-            # 每隔指定的时间间隔检测一次
-            time.sleep(INTERVAL_SECONDS)
 
     finally:
         # 关闭游标和数据库连接
