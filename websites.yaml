@@ -1,11 +1,11 @@
 websites:
-  - name: a
-    page_url: 'https://wallstreetcn.com/live/global'
-    xpath_expression: "(//div[@id='app']/div[@class='layout-default']/div[@class='wrapper']/div[contains(@class,'sticky')]/div[@class='container']/ul[@class='nav-list']/li[@class='nav-item']/a[@class='nav-link'])[3]"
+  - name: yjs
+    page_url: 'https://yjs.sdju.edu.cn/main.htm'
+    xpath_expression: "//div[@id='container-1']/div[@class='inner']/div[contains(@class,'mod')]/div[@class='mr']/div[contains(@class,'post')]/div[@class='con']/ul[contains(@class,'news_list')]/li[contains(@class,'news')]/div[@class='news_title']/a[@title='关于复试考生在我校研究生管理系统上传材料的通知']"
     bark_url: 'https://api.day.app/EbVXR9a3EYxqzbvkGjybha/'
-    interval_seconds: 5
-  - name: b
-    page_url: 'https://wallstreetcn.com/'
-    xpath_expression: "//div[@id='app']/div[@class='layout-default']/div[@class='wrapper']/div[@class='wrapper']/div[contains(@class,'columns')]//div[contains(@class,'quotation-bar')]/a[contains(@class,'first')]//div[@class='price']"
+    interval_seconds: 10
+  - name: design
+    page_url: 'https://design.sdju.edu.cn/'
+    xpath_expression: "(//div[@id='wp_news_w11']/ul[@class='news_list']/div[contains(@class,'clearfix')]/div[@class='post-word']/a)[1]"
     bark_url: 'https://api.day.app/EbVXR9a3EYxqzbvkGjybha/'
-    interval_seconds: 8
+    interval_seconds: 300
